@@ -3,7 +3,9 @@ package com.stefanini.servico;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +42,11 @@ public class PessoaServico implements Serializable {
 	/**
 	 * 
 	 */
+	
 	private static final long serialVersionUID = 1L;
+	
+	private static String caminhoPasta = "C:\\AnexoTeste\\foto\\";
+	
 
 	@Inject
 	private PessoaDao dao;
@@ -58,6 +64,7 @@ public class PessoaServico implements Serializable {
 	public Pessoa salvar(@Valid Pessoa pessoa) {
 		List<Endereco> guardarEnderecos = pessoa.getEnderecos().stream().map(e -> e).collect(Collectors.toList());
 		pessoa.getEnderecos().clear();
+		
 		
 		if(Objects.nonNull(pessoa.getBase64Imagem()) && pessoa.getBase64Imagem().split(",").length > 1) {
 			pessoa.setCaminhoImagem(this.salvarImagemAnexo(pessoa.getBase64Imagem(), pessoa.getEmail()));
@@ -117,21 +124,28 @@ public class PessoaServico implements Serializable {
 	/**
 	 * Buscar uma Pessoa pelo ID
 	 */
-//	@Override
 	public Optional<Pessoa> encontrar(Long id) {
-		return dao.encontrarPessoaCheia(id);
+		Pessoa pessoaBanco = dao.encontrarPessoaCheia(id).get();
+		
+		if(Objects.nonNull(pessoaBanco.getCaminhoImagem()) && !pessoaBanco.getCaminhoImagem().isEmpty()) {
+			pessoaBanco.setBase64Imagem("data:image/jpeg;base64," + carregarImagem(pessoaBanco.getEmail()));			
+		}
+		return Optional.of(pessoaBanco);
 	}
 	
-
+	
+	
+	/**
+	 * Salvar imagem recebendo 2 param. concatenando o caminho da pasta + email + tipo
+	 */
 	private String salvarImagemAnexo(String imageString, String email) {
-		String caminho = "C:\\Users\\Henrique\\VSCode\\Projeto-front-bb\\hackaton-stefanini-estatico-hackaton\\src\\app\\imagens\\fotosPessoas\\";
-	    String url = caminho + email + ".jpg";
+	    String caminhoDaFoto = caminhoPasta + email + ".jpg";
 	    imageString = imageString.split(",")[1];   
 	    BufferedImage image = null;
 	    byte[] imageByte;
 	    
-	    if(!new File(caminho).exists()) {
-		      new File(caminho).mkdir();
+	    if(!new File(caminhoPasta).exists()) {
+		      new File(caminhoPasta).mkdir();
 		    }
 	    
 	    try {
@@ -140,16 +154,37 @@ public class PessoaServico implements Serializable {
 	        ByteArrayInputStream bais = new ByteArrayInputStream(imageByte);
 	        image = ImageIO.read(bais);
 	        bais.close();
-	        ImageIO.write(image, "JPG", new File(url));
+	        ImageIO.write(image, "JPG", new File(caminhoDaFoto));
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-	    return email + ".jpg";
+	    return caminhoDaFoto;
 	}
 	
-
-
 	
+	/**
+	 *  Método que vai concatenar caminhoPasta + email + tipo.
+	 *  passando arquivoFile como retorno para o metodo encodeFileToBase64. 
+	 */
+	private String carregarImagem(String email) {
+	    String caminhoDaFoto = caminhoPasta + email + ".jpg";
+	    
+	    File arquivoF = new File(caminhoDaFoto);
+	    return encodeFileToBase64(arquivoF);
+	}
+	
+	
+	/**
+	 *  byte para Base64
+	 */
+	private String encodeFileToBase64(File arquivoF) {
+	    try {
+	        byte[] fileContent = Files.readAllBytes(arquivoF.toPath());
+	        return Base64.getEncoder().encodeToString(fileContent);
+	    } catch (IOException e) {
+	        throw new IllegalStateException("não foi possível ler o arquivo " + arquivoF, e);
+	    }
+	}
 	
 
 	

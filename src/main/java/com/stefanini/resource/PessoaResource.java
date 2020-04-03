@@ -110,7 +110,7 @@ public class PessoaResource {
 	
 	
 //	@GET
-//	@Path("/paginada")
+//	@Path("/paginacaoPag")
 //	public Response buscarPaginacaoPessoa(
 //			@QueryParam("indiceAtual") Integer indiceAtual, 
 //			@QueryParam("indiceAtual") Integer quantidadePagina) {
