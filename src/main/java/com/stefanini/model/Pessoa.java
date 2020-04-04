@@ -78,6 +78,9 @@ public class Pessoa implements Serializable{
 	@Column(name = "DS_CAMINHO_IMAGEM")	
 	private String caminhoImagem;
 	
+	/**
+	 * atributo não está mapeado na tabela e não deve ser persistido
+	 */
 	@Transient
 	private String base64Imagem;
 	

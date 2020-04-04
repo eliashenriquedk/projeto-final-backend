@@ -6,11 +6,11 @@ import java.util.Optional;
 import javax.persistence.TypedQuery;
 
 import com.stefanini.dao.abstracao.GenericDao;
-import com.stefanini.dto.PaginacaoGenericDto;
+import com.stefanini.dto.PaginacaoPessoaDTO;
 import com.stefanini.model.Pessoa;
 
 /**
- * O Unico objetivo da Dao 
+ * 
  * @author joaopedromilhome
  *
  */
@@ -42,7 +42,9 @@ public class PessoaDao extends GenericDao<Pessoa, Long> {
 	
 	
 	
-	
+	/**
+	 * busca pessoa por id
+	 */
 	public Optional<Pessoa> encontrarPessoaCheia(Long id) {
 		TypedQuery<Pessoa> query = entityManager.createQuery(" SELECT DISTINCT p FROM Pessoa p  LEFT JOIN FETCH p.perfils perfil  LEFT JOIN FETCH p.enderecos endereco Where p.id = :id", Pessoa.class);
 		query.setParameter("id", id);
@@ -51,21 +53,26 @@ public class PessoaDao extends GenericDao<Pessoa, Long> {
 	
 	
 	/**
-	 * Paginação de Pessoa
+	 * paginação pessoa
 	 */
-//	public PaginacaoGenericDTO<Pessoa> buscarPaginacaoPessoa(Integer indiceAtual, Integer quantidadePagina){
-//		TypedQuery<Pessoa> query = entityManager.createQuery(" SELECT DISTINCT p FROM Pessoa p  LEFT JOIN FETCH p.perfils perfil  LEFT JOIN FETCH p.enderecos endereco ORDER BY p.nome", Pessoa.class);
-//		PaginacaoGenericDTO<Pessoa> page = new PaginacaoGenericDTO<Pessoa>();
-//		page.setQuantidade(query.getResultList().size());
-//		query.setFirstResult(indiceAtual).setMaxResults(quantidadePagina);
-//		page.setResultado(query.getResultList());
-//		
-//		
-//		page.setTotalPaginas(page.getResultado().size());
-//		
-//		
-//		return page;
-//	}
+	public PaginacaoPessoaDTO encontrarPessoasComPaginacao(Integer indiceAtual, Integer quantidadePorPagina){
+		TypedQuery<Pessoa> query = entityManager.createQuery(" SELECT DISTINCT p FROM Pessoa p  LEFT JOIN FETCH p.perfils perfil  LEFT JOIN FETCH p.enderecos endereco ORDER BY p.nome", Pessoa.class);
+		
+		PaginacaoPessoaDTO pessoasPaginadas = new PaginacaoPessoaDTO();
+		Integer qtdDeResult = query.getResultList().size(); 
+		pessoasPaginadas.setQuantidadeDeResultados(qtdDeResult);
+		
+		query.setFirstResult(indiceAtual).setMaxResults(quantidadePorPagina);
+		if(qtdDeResult % quantidadePorPagina == 0) {
+			pessoasPaginadas.setTotalPaginas(qtdDeResult / quantidadePorPagina);
+	      } else {
+	    	pessoasPaginadas.setTotalPaginas((qtdDeResult / quantidadePorPagina) + 1);
+	      }
+		
+		pessoasPaginadas.setResultado(query.getResultList());
+				
+		return pessoasPaginadas;
+	}
 	
 	
 }

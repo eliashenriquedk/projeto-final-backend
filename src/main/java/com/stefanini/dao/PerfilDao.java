@@ -1,11 +1,12 @@
 package com.stefanini.dao;
 
-import com.stefanini.dao.abstracao.GenericDao;
-import com.stefanini.model.Perfil;
-import com.stefanini.model.Pessoa;
+import java.util.Optional;
 
 import javax.persistence.TypedQuery;
-import java.util.Optional;
+
+import com.stefanini.dao.abstracao.GenericDao;
+import com.stefanini.dto.PaginacaoPerfilDTO;
+import com.stefanini.model.Perfil;
 
 /**
  * O Unico objetivo da Dao 
@@ -20,8 +21,6 @@ public class PerfilDao extends GenericDao<Perfil, Long> {
 
 	/**
 	 * Efetuando busca de Pessoa por email
-	 * @param nome
-	 * @return
 	 */
 	public Optional<Perfil> buscarPessoaPorNome(String nome){
 		TypedQuery<Perfil> q2 =
@@ -29,5 +28,28 @@ public class PerfilDao extends GenericDao<Perfil, Long> {
 		q2.setParameter("nome", nome);
 		return q2.getResultStream().findFirst();
 	}
+	
+	
+	/**
+	 * paginação de perfil
+	 */
+	public PaginacaoPerfilDTO encontrarPerfilComPaginacao(Integer indiceAtual, Integer quantidadePorPagina){
+		TypedQuery<Perfil> query = entityManager.createQuery("select p from Perfil p", Perfil.class);
+		
+		PaginacaoPerfilDTO perfilsPaginados = new PaginacaoPerfilDTO();
+		Integer qdtDeResultados = query.getResultList().size(); 
+		perfilsPaginados.setQuantidadeDeResultados(qdtDeResultados);
+		
+		query.setFirstResult(indiceAtual).setMaxResults(quantidadePorPagina);
+		if(qdtDeResultados % quantidadePorPagina == 0) {
+			perfilsPaginados.setTotalPaginas(qdtDeResultados / quantidadePorPagina);
+	      } else {
+	    	perfilsPaginados.setTotalPaginas((qdtDeResultados / quantidadePorPagina) + 1);
+	      }
+		
+		perfilsPaginados.setResultado(query.getResultList());
+		return perfilsPaginados;
+	}
+	
 
 }

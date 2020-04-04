@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 
 import com.stefanini.dao.PessoaDao;
+import com.stefanini.dto.PaginacaoPessoaDTO;
 import com.stefanini.exception.NegocioException;
 import com.stefanini.model.Endereco;
 import com.stefanini.model.Pessoa;
@@ -136,7 +137,7 @@ public class PessoaServico implements Serializable {
 	
 	
 	/**
-	 * Salvar imagem recebendo 2 param. concatenando o caminho da pasta + email + tipo
+	 * Salvar imagemAnexo
 	 */
 	private String salvarImagemAnexo(String imageString, String email) {
 	    String caminhoDaFoto = caminhoPasta + email + ".jpg";
@@ -188,9 +189,9 @@ public class PessoaServico implements Serializable {
 	
 
 	
-//	public PaginacaoGenericDTO<Pessoa> buscarPaginacaoPessoa(Integer indiceAtual, Integer quantidadePagina) {
-//		return dao.buscarPaginacaoPessoa(indiceAtual, quantidadePagina);
-//	}
+	public PaginacaoPessoaDTO buscarPaginacaoPessoa(Integer indiceAtual, Integer quantidadePorPagina) {
+		return dao.encontrarPessoasComPaginacao(indiceAtual, quantidadePorPagina);
+	}
 	
 	
 }

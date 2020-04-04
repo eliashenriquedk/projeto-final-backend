@@ -108,14 +108,16 @@ public class PessoaResource {
 
 	
 	
-	
-//	@GET
-//	@Path("/paginacaoPag")
-//	public Response buscarPaginacaoPessoa(
-//			@QueryParam("indiceAtual") Integer indiceAtual, 
-//			@QueryParam("indiceAtual") Integer quantidadePagina) {
-//		return Response.ok(pessoaServico.buscarPaginacaoPessoa(indiceAtual, quantidadePagina)).build();
-//	}
+	/**
+	 * paginação de pessoas
+	 */
+	@GET
+	@Path("/paginacao")
+	public Response buscarPaginacaoPessoa(
+			@QueryParam("indiceAtual") Integer indiceAtual, 
+			@QueryParam("quantidadePorPagina") Integer quantidadePorPagina) {
+		return Response.ok(pessoaServico.buscarPaginacaoPessoa(indiceAtual, quantidadePorPagina)).build();
+	}
 	
 	
 }

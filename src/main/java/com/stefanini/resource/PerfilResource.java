@@ -109,4 +109,17 @@ public class PerfilResource {
         return perfilServico.encontrar(id).map(perfil -> Response.ok(perfil).build()).orElseGet(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 
+    
+    
+    /**
+     *  	
+    */
+	@GET
+	@Path("/paginacaoPerfil")
+	public Response buscarPaginacaoPessoa(
+			@QueryParam("indiceAtual") Integer indiceAtual, 
+			@QueryParam("quantidadePorPagina") Integer quantidadePorPagina) {
+		return Response.ok(perfilServico.buscarPaginacaoPerfil(indiceAtual, quantidadePorPagina)).build();
+	}
+    
 }
