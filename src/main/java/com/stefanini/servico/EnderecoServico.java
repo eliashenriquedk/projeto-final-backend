@@ -1,11 +1,6 @@
 package com.stefanini.servico;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +26,10 @@ import com.stefanini.model.Endereco;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class EnderecoServico implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4712637396209959040L;
 	@Inject
 	private EnderecoDao dao;
 
